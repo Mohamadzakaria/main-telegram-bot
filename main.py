@@ -122,7 +122,7 @@ async def contact_command(update: Update, context: CallbackContext):
         f"{CONTACT_BOT_LINK}"
     )
 
-# 9. دالة معالجة رسائل لوحة السيارة (كما هي)
+# 9. دالة معالجة رسائل لوحة السيارة
 async def get_car_details(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     if not await is_subscribed(user_id, context):
@@ -154,7 +154,7 @@ async def get_car_details(update: Update, context: CallbackContext):
             f"المالك: {details.get('owner_name', 'غير متوفر')}\n"
             f"رقم المالك: {details.get('owner_tel', 'غير متوفر')}\n"
             f"عنوان المالك: {details.get('owner_address', 'غير متوفر')}\n"
-            f"نوع السيارة: {details.get('car_type', 'غير متوفر')}\n"
+            f"نوع السيارة: {details.get('car_type_full', 'غير متوفر')}\n" # تم التعديل هنا ل car_type_full
             f"اللون: {details.get('color', 'غير متوفر')}\n"
             f"الاستخدام: {details.get('usage', 'غير متوفر')}\n"
             f"رقم الشاسيه: {details.get('chassis_number', 'غير متوفر')}\n"
@@ -191,8 +191,8 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
                 UtilisDesc,     -- 5
                 Chassis,        -- 6
                 Moteur,         -- 7
-                Addresse        -- 8
-                TypeDesc        -- 9
+                Addresse,       -- 8
+                TypeDesc        -- 9  <--- تم إضافة هذا
             FROM CARMDI 
             WHERE ActualNB = ? AND CodeDesc = ?
         """
@@ -204,18 +204,22 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
             owner_name = f"{row[1] or ''} {row[0] or ''}".strip() 
             if not owner_name: 
                 owner_name = "غير متوفر"
-            car_type = f"{row[3] or ''} {row[9] or ''}".strip()
-            if not car_type:
-                car_type = "غير متوفر"
+            
+            # **التعديل هنا:** دمج MarqueDesc و TypeDesc لإنشاء car_type_full
+            # row[3] هو MarqueDesc، و row[9] هو TypeDesc
+            car_type_full = f"{row[3] or ''} {row[9] or ''}".strip()
+            if not car_type_full:
+                car_type_full = "غير متوفر"
 
             details = {
                 "owner_name": owner_name,
-                "owner_tel": row[2] if row[2] else "غير متوفر",                   
+                "owner_tel": row[2] if row[2] else "غير متوفر",         
                 "color": row[4] if row[4] else "غير متوفر",             
                 "usage": row[5] if row[5] else "غير متوفر",             
                 "chassis_number": row[6] if row[6] else "غير متوفر",    
                 "engine_details": row[7] if row[7] else "غير متوفر",    
-                "owner_address": row[8] if row[8] else "غير متوفر"      
+                "owner_address": row[8] if row[8] else "غير متوفر",
+                "car_type_full": car_type_full # تم إضافة هذا
             }
             print(f"تم العثور على بيانات: {details}") 
         else:
