@@ -1,0 +1,2 @@
+python-telegram-bot
+# لا تحتاج لمكتبات إضافية هنا لبدء تشغيل Polling مع SQLite
