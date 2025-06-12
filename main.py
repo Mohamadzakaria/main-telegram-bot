@@ -192,6 +192,7 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
                 Chassis,        -- 6
                 Moteur,         -- 7
                 Addresse        -- 8
+                TypeDesc        -- 9
             FROM CARMDI 
             WHERE ActualNB = ? AND CodeDesc = ?
         """
@@ -203,11 +204,13 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
             owner_name = f"{row[1] or ''} {row[0] or ''}".strip() 
             if not owner_name: 
                 owner_name = "غير متوفر"
+            car_type = f"{row[3] or ''} {row[9] or ''}".strip()
+            if not car_type:
+                car_type = "غير متوفر"
 
             details = {
                 "owner_name": owner_name,
-                "owner_tel": row[2] if row[2] else "غير متوفر",         
-                "car_type": row[3] if row[3] else "غير متوفر",          
+                "owner_tel": row[2] if row[2] else "غير متوفر",                   
                 "color": row[4] if row[4] else "غير متوفر",             
                 "usage": row[5] if row[5] else "غير متوفر",             
                 "chassis_number": row[6] if row[6] else "غير متوفر",    
