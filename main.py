@@ -169,7 +169,7 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
     conn = None
     details = None
     try:
-        db_path = '17-05-2022.db' 
+        db_path = '../17-05-2022.db' # هذا المسار يشير إلى الملف في المجلد الأعلى 
         print(f"محاولة الاتصال بقاعدة البيانات: {db_path}") 
         conn = sqlite3.connect(db_path) 
         cursor = conn.cursor()
