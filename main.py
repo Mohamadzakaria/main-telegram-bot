@@ -153,8 +153,7 @@ async def get_car_details(update: Update, context: CallbackContext):
             f"-----------------------------------\n"
             f"المالك: {details.get('owner_name', 'غير متوفر')}\n"
             f"رقم المالك: {details.get('owner_tel', 'غير متوفر')}\n"
-            f"عنوان المالك: {details.get('owner_address', 'غير متوفر')}\n"
-            f"نوع السيارة: {details.get('car_type_full', 'غير متوفر')}\n" # تم التعديل هنا ل car_type_full
+            f"نوع السيارة: {details.get('car_type_full', 'غير متوفر')}\n" # car_type_full هو الاسم الجديد للدمج
             f"اللون: {details.get('color', 'غير متوفر')}\n"
             f"الاستخدام: {details.get('usage', 'غير متوفر')}\n"
             f"رقم الشاسيه: {details.get('chassis_number', 'غير متوفر')}\n"
@@ -164,12 +163,12 @@ async def get_car_details(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text(f"عذراً، لم أتمكن من العثور على تفاصيل للوحة: {car_plate_input}. يرجى التحقق من الرقم والمحاولة مرة أخرى.")
 
-# 10. دالة لجلب البيانات من قاعدة بيانات SQLite (كما هي)
+# 10. دالة لجلب البيانات من قاعدة بيانات SQLite
 async def fetch_car_plate_data(code_char: str, number_part: str):
     conn = None
     details = None
     try:
-        db_path = '../17-05-2022.db' # هذا المسار يشير إلى الملف في المجلد الأعلى 
+        db_path = '../17-05-2022.db' 
         print(f"محاولة الاتصال بقاعدة البيانات: {db_path}") 
         conn = sqlite3.connect(db_path) 
         cursor = conn.cursor()
@@ -191,8 +190,7 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
                 UtilisDesc,     -- 5
                 Chassis,        -- 6
                 Moteur,         -- 7
-                Addresse,       -- 8
-                TypeDesc        -- 9  <--- تم إضافة هذا
+                TypeDesc        -- 8  <--- تم تغيير فهرسه هذا العمود إلى 8
             FROM CARMDI 
             WHERE ActualNB = ? AND CodeDesc = ?
         """
@@ -205,21 +203,20 @@ async def fetch_car_plate_data(code_char: str, number_part: str):
             if not owner_name: 
                 owner_name = "غير متوفر"
             
-            # **التعديل هنا:** دمج MarqueDesc و TypeDesc لإنشاء car_type_full
-            # row[3] هو MarqueDesc، و row[9] هو TypeDesc
-            car_type_full = f"{row[3] or ''} {row[9] or ''}".strip()
+            # دمج MarqueDesc (row[3]) و TypeDesc (row[8]) لإنشاء car_type_full
+            car_type_full = f"{row[3] or ''} {row[8] or ''}".strip()
             if not car_type_full:
                 car_type_full = "غير متوفر"
 
             details = {
                 "owner_name": owner_name,
                 "owner_tel": row[2] if row[2] else "غير متوفر",         
+                "car_type_full": car_type_full, # إضافة القيمة المدمجة هنا
                 "color": row[4] if row[4] else "غير متوفر",             
                 "usage": row[5] if row[5] else "غير متوفر",             
                 "chassis_number": row[6] if row[6] else "غير متوفر",    
                 "engine_details": row[7] if row[7] else "غير متوفر",    
-                "owner_address": row[8] if row[8] else "غير متوفر",
-                "car_type_full": car_type_full # تم إضافة هذا
+                # "owner_address": row[8] if row[8] else "غير متوفر" # تم إزالة هذا السطر لأن Addresse لم يعد في الاستعلام
             }
             print(f"تم العثور على بيانات: {details}") 
         else:
