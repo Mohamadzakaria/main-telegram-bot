@@ -10,7 +10,7 @@ CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002546660006"))
 CHANNEL_LINK = os.environ.get("CHANNEL_LINK", "https://t.me/PlateNumberLB")
 CONTACT_BOT_LINK = os.environ.get("CONTACT_BOT_LINK", "https://t.me/splatenumberlb_bot")
 
-DB_PATH = 'C:/Users/mm223/OneDrive/سطح المكتب/main_bot_deploy/new_main_bot_data.db'
+DB_PATH = os.path.join(os.path.dirname(__file__), 'data.db')
 MAX_FREE_ATTEMPTS = 3
 
 # تحديث جدول المحاولات ليشمل الاشتراك
