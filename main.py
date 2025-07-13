@@ -10,8 +10,8 @@ CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002546660006"))
 CHANNEL_LINK = os.environ.get("CHANNEL_LINK", "https://t.me/PlateNumberLB")
 CONTACT_BOT_LINK = os.environ.get("CONTACT_BOT_LINK", "https://t.me/splatenumberlb_bot")
 
-DB_PATH = 'data.db'
-MAX_FREE_ATTEMPTS = 3
+DB_PATH = 'C:/Users/mm223/OneDrive/سطح المكتب/main_bot_deploy/new_main_bot_data.db'
+MAX_FREE_ATTEMPTS = 1
 
 # تحديث جدول المحاولات ليشمل الاشتراك
 def setup_user_attempts_table():
@@ -95,13 +95,17 @@ def reset_attempts_if_needed(user_id: int):
     attempts_left, last_reset_str, is_premium, premium_until_str = record
     is_premium = bool(is_premium)
 
-    # تحقق انتهاء الاشتراك
+    # تحقق انتهاء الاشتراك فقط إن كان التاريخ بصيغة صحيحة
     if is_premium and premium_until_str:
-        premium_until = datetime.datetime.fromisoformat(premium_until_str).date()
-        if premium_until < today:
-            # انتهى الاشتراك
-            is_premium = False
-            update_user_record(user_id, is_premium=0, premium_until=None)
+        try:
+            premium_until = datetime.datetime.fromisoformat(premium_until_str).date()
+            if premium_until < today:
+                # انتهى الاشتراك
+                is_premium = False
+                update_user_record(user_id, is_premium=0, premium_until=None)
+        except ValueError:
+            # إذا كانت القيمة مثل "للأبد"، نعتبره مشترك دائمًا
+            pass
 
     # إعادة تعيين المحاولات يومياً للمستخدمين غير المشتركين
     if not is_premium:
@@ -139,7 +143,7 @@ async def help_command(update: Update, context: CallbackContext):
         "ℹ️ <b>طريقة الاستخدام:</b>\n\n"
         "✅ أرسل رقم اللوحة بالتنسيق التالي: <b>حرف + أرقام</b>\n"
         "📌 مثال: <code>A123456</code>\n\n"
-        "🆓 لديك <b>3 محاولات مجانية يومياً</b> إذا لم تكن مشتركاً.\n"
+        "🆓 لديك <b> محاوله مجانية يومياً</b> إذا لم تكن مشتركاً.\n"
         "📉 تُخصم المحاولة فقط إذا تم العثور على بيانات.",
         parse_mode="HTML"
     )
@@ -160,13 +164,13 @@ async def status_command(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     record = get_user_record(user_id)
     if not record:
-        await update.message.reply_text("👤 أنت مستخدم جديد. لديك 3 محاولات مجانية اليوم.")
+        await update.message.reply_text("👤 أنت مستخدم جديد. لديك محاوله مجانية اليوم.")
         return
     attempts_left, _, is_premium, premium_until = record
     if is_premium:
         await update.message.reply_text(f"✅ أنت <b>مشترك</b> حتى: <b>{premium_until}</b>\n🔄 المحاولات: <b>غير محدودة</b>", parse_mode="HTML")
     else:
-        await update.message.reply_text(f"🔢 محاولاتك المتبقية اليوم: <b>{attempts_left}</b> من أصل 3", parse_mode="HTML")
+        await update.message.reply_text(f"🔢 محاولاتك المتبقية اليوم: <b>{attempts_left}</b> من أصل 1", parse_mode="HTML")
 
 
 async def get_car_details(update: Update, context: CallbackContext):
