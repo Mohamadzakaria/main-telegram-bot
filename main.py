@@ -148,17 +148,18 @@ async def subscribe_command(update: Update, context: CallbackContext):
     await update.message.reply_text(
         "💎 <b>خطط الاشتراك:</b>\n\n"
         "📅 شهري: <b>3$</b>\n"
-        "📆 سنوي: <b>20$</b>\n"
-        "♾️ دائم: <b>30$</b>\n\n"
-        "💠 مميزات الاشتراك:\n"
+        "♾️ دائم: <b>30$</b> (ميزات خاصه)\n\n"
+        "💠 <b>مميزات الاشتراك:</b>\n"
         "✅ معلومات موسعة\n"
         "🔓 ميزات إضافية للمشتركين\n"
-        "🛡️ <b>الدائم</b>: إمكانية حذف بياناتك\n\n"
-        "💰 الدفع USDT (TRC20):\n"
+        "🛡️ <b>الدائم</b>: إمكانية حذف بياناتك وميزات أخرى ستضاف لاحقاً\n\n"
+        "💰 <b>الدفع USDT (TRC20):</b>\n"
         "<code>TKQcYbR5Bzxk7EmQMyNXA8xfSL8N7p5ivQ</code>\n\n"
-        f"📩 تواصل للتفعيل: <a href=\"{CONTACT_BOT_LINK}\">اضغط هنا</a>",
+        "أو يمكنك الدفع عبر <b>WHISH</b>\n\n"
+        "📩 <b>تواصل للتفعيل:</b> <a href=\"https://t.me/splatenumberlb_bot\">اضغط هنا</a>",
         parse_mode="HTML"
     )
+
 
 async def status_command(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
